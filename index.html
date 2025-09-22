@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة القصص والروايات</title>
+    <style>
+        /* أنماط CSS الأساسية */
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cbc;
+            --background-color: #f5f5f5;
+            --text-color: #333;
+            --card-color: #fff;
+            --shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        /* أنماط الهيدر */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .search-bar {
+            flex-grow: 1;
+            margin: 0 15px;
+        }
+        
+        .search-bar input {
+            width: 100%;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: none;
+            outline: none;
+        }
+        
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        /* أنماط القائمة الجانبية */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background-color: var(--card-color);
+            box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+            transition: right 0.3s ease;
+            z-index: 200;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .side-menu.active {
+            right: 0;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            cursor: pointer;
+        }
+        
+        .developer-info {
+            margin-top: 40px;
+        }
+        
+        .social-links {
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            display: block;
+            margin: 10px 0;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 150;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+        
+        /* أنماط المحتوى الرئيسي */
+        main {
+            padding: 15px;
+            padding-bottom: 70px; /* مساحة لشريط التنقل السفلي */
+        }
+        
+        .section-title {
+            margin: 20px 0 15px;
+            font-size: 1.2rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 5px;
+        }
+        
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .story-card {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s;
+        }
+        
+        .story-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .story-cover {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .story-info {
+            padding: 10px;
+        }
+        
+        .story-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .story-author {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        /* أنماط شريط التنقل السفلي */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--card-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            font-size: 0.8rem;
+        }
+        
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+        
+        .nav-icon {
+            font-size: 1.2rem;
+            margin-bottom: 3px;
+        }
+        
+        .add-btn {
+            position: fixed;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            font-size: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 90;
+        }
+        
+        /* أنماط نموذج النشر */
+        .publish-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 300;
+            display: none;
+        }
+        
+        .publish-modal.active {
+            display: flex;
+        }
+        
+        .publish-form {
+            background-color: var(--card-color);
+            width: 90%;
+            max-width: 500px;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .form-title {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .publish-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+        }
+        
+        /* أنماط صفحة القراءة */
+        .reading-page {
+            display: none;
+            padding: 15px;
+            padding-bottom: 70px;
+        }
+        
+        .reading-header {
+            margin-bottom: 20px;
+        }
+        
+        .reading-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .reading-meta {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .reading-content {
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+        
+        .comments-section {
+            margin-top: 30px;
+        }
+        
+        .comment-form {
+            margin-bottom: 20px;
+        }
+        
+        .comment-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .comment-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .comments-list {
+            margin-top: 20px;
+        }
+        
+        .comment {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .comment-author {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        /* أنماط صفحة تسجيل الدخول */
+        .login-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .login-title {
+            margin-bottom: 30px;
+            font-size: 1.5rem;
+        }
+        
+        .google-login-btn {
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 1rem;
+        }
+        
+        .google-logo {
+            width: 20px;
+            height: 20px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- صفحة تسجيل الدخول -->
+    <div class="login-page" id="loginPage">
+        <h1 class="login-title">منصة القصص والروايات</h1>
+        <p>سجل الدخول للوصول إلى آلاف القصص والروايات</p>
+        <button class="google-login-btn" id="googleLoginBtn">
+            تسجيل الدخول باستخدام Google
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMTcuNiA5LjJsLS4xLTEuOEg5djMuNGg0LjhDMTMuNiAxMiAxMyAxMyAxMiAxMy42djIuMmgzYTguOCA4LjggMCAwIDAgMi42LTYuNnoiIGZpbGw9IiM0Mjg1RjQiIGZpbGwtcnVsZT0ibm9uemVybyIvPjxwYXRoIGQ9Ik05IDE4YzIuNCAwIDQuNS0uOCA2LTIuMmwtMy0yLjJhNS40IDUuNCAwIDAgMS04LTIuOUgxVjEzYTkgOSAwIDAgMCA4IDV6IiBmaWxsPSIjMzRBODUzIiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNNCAxMC43YTUuNCA1LjQgMCAwIDEgMC0zLjRWNUgxYTkgOSAwIDAgMCAwIDhsMy0yLjN6IiBmaWxsPSIjRkJCQzA1IiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNOSAzLjZjMS4zIDAgMi41LjQgMy40IDEuM0wxNSAyLjNBOSA5IDAgMCAwIDEgNWwzIDIuNGE1LjQgNS40IDAgMCAxIDUtMy43eiIgZmlsbD0iI0VBNDMzNSIgZmlsbC1ydWxlPSJub256ZXJvIi8+PHBhdGggZD0iTTAgMGgxOHYxOEgweiIvPjwvZz48L3N2Zz4=" alt="Google" class="google-logo">
+        </button>
+    </div>
+
+    <!-- الواجهة الرئيسية -->
+    <div class="main-interface" id="mainInterface" style="display: none;">
+        <!-- الهيدر -->
+        <header>
+            <div class="logo">منصة القصص</div>
+            <div class="search-bar">
+                <input type="text" placeholder="ابحث عن رواية أو قصة...">
+            </div>
+            <button class="menu-btn" id="menuBtn">☰</button>
+        </header>
+
+        <!-- القائمة الجانبية -->
+        <div class="side-menu" id="sideMenu">
+            <button class="close-btn" id="closeMenuBtn">×</button>
+            <div class="developer-info">
+                <h2>نبذة عن المطور</h2>
+                <p>زهير، 17 سنة، شاب مغربي شغوف بالبرمجة وتطوير الويب. أسعى دائماً لإنشاء تطبيقات مفيدة وسهلة الاستخدام.</p>
+            </div>
+            <div class="social-links">
+                <h3>وسائل التواصل</h3>
+                <a href="https://wa.me/212693772942" target="_blank">واتساب: +212 693772942</a>
+                <a href="https://www.instagram.com/0_____________69_____________0?igsh=MXV3OGMweGRqdWFzeg==" target="_blank">إنستغرام: @zouhair_dev</a>
+            </div>
+        </div>
+        <div class="overlay" id="overlay"></div>
+
+        <!-- المحتوى الرئيسي -->
+        <main>
+            <h2 class="section-title">الروايات الحديثة</h2>
+            <div class="stories-grid" id="recentStories">
+                <!-- سيتم ملؤها بالبيانات -->
+            </div>
+
+            <h2 class="section-title">الأكثر رواجاً</h2>
+            <div class="stories-grid" id="popularStories">
+                <!-- سيتم ملؤها بالبيانات -->
+            </div>
+
+            <h2 class="section-title">جميع الروايات</h2>
+            <div class="stories-grid" id="allStories">
+                <!-- سيتم ملؤها بالبيانات -->
+            </div>
+        </main>
+
+        <!-- شريط التنقل السفلي -->
+        <div class="bottom-nav">
+            <a href="#" class="nav-item active">
+                <span class="nav-icon">📚</span>
+                <span>الروايات</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">📖</span>
+                <span>القصص</span>
+            </a>
+        </div>
+
+        <!-- زر النشر -->
+        <button class="add-btn" id="addBtn">+</button>
+
+        <!-- نموذج النشر -->
+        <div class="publish-modal" id="publishModal">
+            <div class="publish-form">
+                <h2 class="form-title">نشر جديد</h2>
+                <div class="form-group">
+                    <label for="publishType">نوع المحتوى</label>
+                    <select id="publishType">
+                        <option value="story">قصة</option>
+                        <option value="novel">رواية</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="title">العنوان</label>
+                    <input type="text" id="title" placeholder="أدخل العنوان">
+                </div>
+                <div class="form-group">
+                    <label for="cover">صورة الغلاف</label>
+                    <input type="file" id="cover" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label for="description">الوصف المختصر</label>
+                    <textarea id="description" placeholder="أدخل وصفاً مختصراً"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="file">تحميل الملف (PDF)</label>
+                    <input type="file" id="file" accept=".pdf">
+                </div>
+                <button class="publish-btn" id="submitPublishBtn">نشر</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- صفحة القراءة -->
+    <div class="reading-page" id="readingPage">
+        <div class="reading-header">
+            <h1 class="reading-title" id="readingTitle">عنوان الرواية</h1>
+            <div class="reading-meta">
+                <span id="readingAuthor">بواسطة: المؤلف</span>
+                <span> | </span>
+                <span id="readingDate">تاريخ النشر: 2023-10-15</span>
+            </div>
+        </div>
+        <div class="reading-content" id="readingContent">
+            <!-- محتوى الرواية سيتم تحميله هنا -->
+        </div>
+        <div class="comments-section">
+            <h3>التعليقات</h3>
+            <div class="comment-form">
+                <textarea class="comment-input" placeholder="أضف تعليقاً..."></textarea>
+                <button class="comment-btn">إرسال</button>
+            </div>
+            <div class="comments-list" id="commentsList">
+                <!-- التعليقات ستظهر هنا -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // بيانات تجريبية للروايات
+        const sampleStories = [
+            {
+                id: 1,
+                title: "رحلة إلى المجهول",
+                author: "أحمد محمد",
+                cover: "https://via.placeholder.com/150x200/4a6fa5/ffffff?text=رحلة+إلى+المجهول",
+                description: "رواية خيالية عن رحلة شاب إلى عالم مجهول",
+                type: "novel",
+                date: "2023-10-15",
+                content: "هذا هو محتوى الرواية التجريبي. يمكن استبداله بمحتوى حقيقي من قاعدة البيانات."
+            },
+            {
+                id: 2,
+                title: "ليالي القمر",
+                author: "فاطمة الزهراء",
+                cover: "https://via.placeholder.com/150x200/6b8cbc/ffffff?text=ليالي+القمر",
+                description: "قصة رومانسية تدور أحداثها تحت ضوء القمر",
+                type: "story",
+                date: "2023-10-10",
+                content: "هذا هو محتوى القصة التجريبي. يمكن استبداله بمحتوى حقيقي من قاعدة البيانات."
+            },
+            {
+                id: 3,
+                title: "أسرار المدينة",
+                author: "خالد عبدالله",
+                cover: "https://via.placeholder.com/150x200/8fa8d4/ffffff?text=أسرار+المدينة",
+                description: "رواية غامضة تكشف أسرار مدينة قديمة",
+                type: "novel",
+                date: "2023-10-05",
+                content: "هذا هو محتوى الرواية التجريبي. يمكن استبداله بمحتوى حقيقي من قاعدة البيانات."
+            },
+            {
+                id: 4,
+                title: "الحلم الضائع",
+                author: "سارة علي",
+                cover: "https://via.placeholder.com/150x200/a3b8d9/ffffff?text=الحلم+الضائع",
+                description: "قصة عن شاب يحاول تحقيق حلمه رغم الصعوبات",
+                type: "story",
+                date: "2023-10-01",
+                content: "هذا هو محتوى القصة التجريبي. يمكن استبداله بمحتوى حقيقي من قاعدة البيانات."
+            }
+        ];
+
+        // عناصر DOM
+        const loginPage = document.getElementById('loginPage');
+        const mainInterface = document.getElementById('mainInterface');
+        const readingPage = document.getElementById('readingPage');
+        const googleLoginBtn = document.getElementById('googleLoginBtn');
+        const menuBtn = document.getElementById('menuBtn');
+        const closeMenuBtn = document.getElementById('closeMenuBtn');
+        const sideMenu = document.getElementById('sideMenu');
+        const overlay = document.getElementById('overlay');
+        const addBtn = document.getElementById('addBtn');
+        const publishModal = document.getElementById('publishModal');
+        const submitPublishBtn = document.getElementById('submitPublishBtn');
+        const recentStories = document.getElementById('recentStories');
+        const popularStories = document.getElementById('popularStories');
+        const allStories = document.getElementById('allStories');
+        const readingTitle = document.getElementById('readingTitle');
+        const readingAuthor = document.getElementById('readingAuthor');
+        const readingDate = document.getElementById('readingDate');
+        const readingContent = document.getElementById('readingContent');
+
+        // تسجيل الدخول باستخدام Google (محاكاة)
+        googleLoginBtn.addEventListener('click', function() {
+            // في التطبيق الحقيقي، سيتم تنفيذ OAuth هنا
+            loginPage.style.display = 'none';
+            mainInterface.style.display = 'block';
+            loadStories();
+        });
+
+        // فتح وإغلاق القائمة الجانبية
+        menuBtn.addEventListener('click', function() {
+            sideMenu.classList.add('active');
+            overlay.classList.add('active');
+        });
+
+        closeMenuBtn.addEventListener('click', function() {
+            sideMenu.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+
+        overlay.addEventListener('click', function() {
+            sideMenu.classList.remove('active');
+            overlay.classList.remove('active');
+            publishModal.classList.remove('active');
+        });
+
+        // فتح نموذج النشر
+        addBtn.addEventListener('click', function() {
+            publishModal.classList.add('active');
+            overlay.classList.
